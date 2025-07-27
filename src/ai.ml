@@ -12,6 +12,18 @@ type text_generation_output = {
   tool_calls : tool_call array option;
 }
 
+type score_outputs_item = {
+  id: int;
+  score: float;
+}
+type score_outputs = {
+  response: score_outputs_item array;
+}
+
 external run_text_generation :
   t -> string -> 'a Js.t -> text_generation_output Js.Promise.t = "run"
+
+external run_score :
+  t -> string -> 'a Js.t -> score_outputs Js.Promise.t = "run"
+
 [@@mel.send]
