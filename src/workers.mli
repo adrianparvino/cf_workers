@@ -5,8 +5,8 @@ end
 module Workers_request : sig
   type t = { _method : String.t; [@mel.as "method"] headers : Headers.t }
 
-  external text : unit -> String.t Js.Promise.t = "text" [@@mel.send.pipe: t]
-  external json : unit -> 'a Js.t Js.Promise.t = "json" [@@mel.send.pipe: t]
+  external text : unit -> (t [@mel.this]) -> String.t Js.Promise.t = "text" [@@mel.send]
+  external json : unit -> (t [@mel.this]) -> 'a Js.t Js.Promise.t = "json" [@@mel.send]
 end
 
 module type Handler = sig

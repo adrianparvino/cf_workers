@@ -20,17 +20,14 @@
 (package
  (allow_empty)
  (name cf_workers)
- (synopsis "A short synopsis")
- (description "A longer description")
+ (synopsis "Melange bindings for Cloudflare Workers")
+ (description "Melange bindings for Cloudflare Workers")
  (depends
   ocaml
   (melange
    (>= 3.0.0))
   (dune
    (>= 3.13))
-  odoc
-  melange-webapi)
- (tags
-  (topics "to describe" your project)))
+  odoc))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
