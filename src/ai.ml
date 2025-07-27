@@ -22,8 +22,8 @@ type score_outputs = {
 
 external run_text_generation :
   t -> string -> 'a Js.t -> text_generation_output Js.Promise.t = "run"
+[@@mel.send]
 
 external run_score :
   t -> string -> 'a Js.t -> score_outputs Js.Promise.t = "run"
-
 [@@mel.send]
