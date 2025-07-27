@@ -24,6 +24,7 @@ module type Handler = sig
   val post : Headers.t -> Env.t -> Js.String.t -> Response.t Js.Promise.t
   val put : Headers.t -> Env.t -> Js.String.t -> Response.t Js.Promise.t
   val delete : Headers.t -> Env.t -> Response.t Js.Promise.t
+  val options : Headers.t -> Env.t -> Response.t Js.Promise.t
 end
 
 module Make (Handler : Handler) : sig
