@@ -6,7 +6,7 @@ maintainer: ["Adrian Parvin Ouano"]
 authors: ["Adrian Parvin Ouano"]
 license: "LGPL-3.0-only"
 homepage: "https://github.com/adrianparvino/cf_workers"
-doc: "https://url/to/documentation"
+doc: "https://github.com/adrianparvino/cf_workers"
 bug-reports: "https://github.com/adrianparvino/cf_workers/issues"
 depends: [
   "ocaml"

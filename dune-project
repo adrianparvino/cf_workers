@@ -15,7 +15,7 @@
 
 (license "LGPL-3.0-only")
 
-(documentation https://url/to/documentation)
+(documentation https://github.com/adrianparvino/cf_workers)
 
 (package
  (allow_empty)
