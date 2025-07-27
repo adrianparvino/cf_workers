@@ -1,5 +1,6 @@
 (library
  (name cf_workers)
+ (public_name cf_workers)
  (modes melange)
  (preprocess
   (pps melange.ppx)))

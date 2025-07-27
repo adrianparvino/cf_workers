@@ -18,7 +18,6 @@
 (documentation https://github.com/adrianparvino/cf_workers)
 
 (package
- (allow_empty)
  (name cf_workers)
  (synopsis "Melange bindings for Cloudflare Workers")
  (description "Melange bindings for Cloudflare Workers")
