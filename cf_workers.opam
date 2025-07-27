@@ -10,7 +10,7 @@ doc: "https://github.com/adrianparvino/cf_workers"
 bug-reports: "https://github.com/adrianparvino/cf_workers/issues"
 depends: [
   "ocaml"
-  "melange" {>= "3.0.0"}
+  "melange" {>= "5.0.1"}
   "dune" {>= "3.13" & >= "3.13"}
   "odoc"
 ]

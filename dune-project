@@ -25,7 +25,7 @@
  (depends
   ocaml
   (melange
-   (>= 3.0.0))
+   (>= 5.0.1))
   (dune
    (>= 3.13))
   odoc))
