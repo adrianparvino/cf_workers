@@ -1,21 +1,20 @@
 module Response : sig
   type t
+
+  val create : ?headers:Headers.t -> Js.String.t -> t
 end
 
 module Workers_request : sig
   type t = { _method : String.t; [@mel.as "method"] headers : Headers.t }
 
-  external text : unit -> (t [@mel.this]) -> String.t Js.Promise.t = "text" [@@mel.send]
-  external json : unit -> (t [@mel.this]) -> 'a Js.t Js.Promise.t = "json" [@@mel.send]
+  external text : unit -> (t[@mel.this]) -> String.t Js.Promise.t = "text"
+  [@@mel.send]
+
+  external json : unit -> (t[@mel.this]) -> 'a Js.t Js.Promise.t = "json"
+  [@@mel.send]
 end
 
 module type Handler = sig
-  module Response : sig
-    type t
-
-    val render : t -> Js.String.t
-  end
-
   module Env : sig
     type t
   end

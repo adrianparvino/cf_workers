@@ -41,7 +41,6 @@ end
 module Make (Handler : Handler) = struct
   let handle request env () =
     let open Workers_request in
-    let open Promise_utils.Bind in
     let headers = request.headers in
     let open Promise_utils.Bind in
     match request._method with
