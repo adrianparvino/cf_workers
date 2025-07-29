@@ -1,5 +1,5 @@
 module Env = struct
-  type t = { ai : Ai.t option }
+  type t = { ai : Ai.t option; d1 : D1.t option }
 
   external getUnsafe : t -> string -> 'a = "" [@@mel.get_index]
 

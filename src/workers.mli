@@ -1,5 +1,5 @@
 module Env : sig
-  type t = { ai : Ai.t option }
+  type t = { ai : Ai.t option; d1 : D1.t option }
 
   val get : t -> string -> 'a option
 end
