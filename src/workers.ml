@@ -1,3 +1,29 @@
+module Env = struct
+  type t = { ai : Ai.t option }
+
+  external getUnsafe : t -> string -> 'a = "" [@@mel.get_index]
+
+  let get = getUnsafe
+end
+
+module Request = struct
+  type t =
+    | Head of { headers : Headers.t; env : Env.t }
+    | Get of { headers : Headers.t; env : Env.t }
+    | Post of {
+        headers : Headers.t;
+        env : Env.t;
+        body : unit -> string Js.Promise.t;
+      }
+    | Put of {
+        headers : Headers.t;
+        env : Env.t;
+        body : unit -> string Js.Promise.t;
+      }
+    | Delete of { headers : Headers.t; env : Env.t }
+    | Options of { headers : Headers.t; env : Env.t }
+end
+
 module Response = struct
   type t
   type options = { headers : Headers.t } [@@warning "-69"]
@@ -16,19 +42,6 @@ module Response = struct
     make response { headers }
 end
 
-module type Handler = sig
-  module Env : sig
-    type t
-  end
-
-  val head : Headers.t -> Env.t -> Response.t Js.Promise.t
-  val get : Headers.t -> Env.t -> Response.t Js.Promise.t
-  val post : Headers.t -> Env.t -> Js.String.t -> Response.t Js.Promise.t
-  val put : Headers.t -> Env.t -> Js.String.t -> Response.t Js.Promise.t
-  val delete : Headers.t -> Env.t -> Response.t Js.Promise.t
-  val options : Headers.t -> Env.t -> Response.t Js.Promise.t
-end
-
 module Workers_request = struct
   type t = { _method : String.t; [@mel.as "method"] headers : Headers.t }
 
@@ -39,22 +52,34 @@ module Workers_request = struct
   [@@mel.send]
 end
 
-module Make (Handler : Handler) = struct
+module Make (Handler : sig
+  val handle : Request.t -> Response.t Js.Promise.t
+end) =
+struct
   let handle request env () =
     let open Workers_request in
     let headers = request.headers in
-    let open Promise_utils.Bind in
-    match request._method with
-    | "HEAD" -> Handler.head headers env
-    | "GET" -> Handler.get headers env
-    | "POST" ->
-        let* body = request |> Workers_request.text () in
-        let _ = Js.Console.log body in
-        Handler.post headers env body
-    | "PUT" ->
-        let* body = request |> Workers_request.text () in
-        Handler.put headers env body
-    | "DELETE" -> Handler.delete headers env
-    | "OPTIONS" -> Handler.options headers env
-    | _ -> failwith "method not supported"
+    let request =
+      match request._method with
+      | "HEAD" -> Request.Head { headers; env }
+      | "GET" -> Request.Get { headers; env }
+      | "POST" ->
+          Request.Post
+            {
+              headers;
+              env;
+              body = (fun () -> request |> Workers_request.text ());
+            }
+      | "PUT" ->
+          Request.Put
+            {
+              headers;
+              env;
+              body = (fun () -> request |> Workers_request.text ());
+            }
+      | "DELETE" -> Request.Delete { headers; env }
+      | "OPTIONS" -> Request.Options { headers; env }
+      | _ -> failwith "method not supported"
+    in
+    Handler.handle request
 end

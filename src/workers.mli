@@ -1,3 +1,27 @@
+module Env : sig
+  type t = { ai : Ai.t option }
+
+  val get : t -> string -> 'a option
+end
+
+module Request : sig
+  type t =
+    | Head of { headers : Headers.t; env : Env.t }
+    | Get of { headers : Headers.t; env : Env.t }
+    | Post of {
+        headers : Headers.t;
+        env : Env.t;
+        body : unit -> string Js.Promise.t;
+      }
+    | Put of {
+        headers : Headers.t;
+        env : Env.t;
+        body : unit -> string Js.Promise.t;
+      }
+    | Delete of { headers : Headers.t; env : Env.t }
+    | Options of { headers : Headers.t; env : Env.t }
+end
+
 module Response : sig
   type t
 
@@ -14,20 +38,8 @@ module Workers_request : sig
   [@@mel.send]
 end
 
-module type Handler = sig
-  module Env : sig
-    type t
-  end
-
-  val head : Headers.t -> Env.t -> Response.t Js.Promise.t
-  val get : Headers.t -> Env.t -> Response.t Js.Promise.t
-  val post : Headers.t -> Env.t -> Js.String.t -> Response.t Js.Promise.t
-  val put : Headers.t -> Env.t -> Js.String.t -> Response.t Js.Promise.t
-  val delete : Headers.t -> Env.t -> Response.t Js.Promise.t
-  val options : Headers.t -> Env.t -> Response.t Js.Promise.t
-end
-
-module Make (Handler : Handler) : sig
-  val handle :
-    Workers_request.t -> Handler.Env.t -> unit -> Response.t Js.Promise.t
+module Make (_ : sig
+  val handle : Request.t -> Response.t Js.Promise.t
+end) : sig
+  val handle : Workers_request.t -> Env.t -> unit -> Response.t Js.Promise.t
 end
