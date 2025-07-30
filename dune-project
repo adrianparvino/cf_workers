@@ -25,8 +25,6 @@
   ocaml
   (melange
    (>= 5.0.1))
-  (dune
-   (>= 3.13))
   odoc))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
