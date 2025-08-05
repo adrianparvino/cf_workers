@@ -6,20 +6,22 @@ end
 
 module Request : sig
   type t =
-    | Head of { headers : Headers.t; env : Env.t }
-    | Get of { headers : Headers.t; env : Env.t }
+    | Head of { url : string; headers : Headers.t; env : Env.t }
+    | Get of { url : string; headers : Headers.t; env : Env.t }
     | Post of {
+        url : string;
         headers : Headers.t;
         env : Env.t;
         body : unit -> string Js.Promise.t;
       }
     | Put of {
+        url : string;
         headers : Headers.t;
         env : Env.t;
         body : unit -> string Js.Promise.t;
       }
-    | Delete of { headers : Headers.t; env : Env.t }
-    | Options of { headers : Headers.t; env : Env.t }
+    | Delete of { url : string; headers : Headers.t; env : Env.t }
+    | Options of { url : string; headers : Headers.t; env : Env.t }
 end
 
 module Response : sig
@@ -29,7 +31,11 @@ module Response : sig
 end
 
 module Workers_request : sig
-  type t = { _method : String.t; [@mel.as "method"] headers : Headers.t }
+  type t = {
+    _method : String.t; [@mel.as "method"]
+    headers : Headers.t;
+    url : Js.String.t;
+  }
 
   external text : unit -> (t[@mel.this]) -> String.t Js.Promise.t = "text"
   [@@mel.send]

@@ -8,20 +8,22 @@ end
 
 module Request = struct
   type t =
-    | Head of { headers : Headers.t; env : Env.t }
-    | Get of { headers : Headers.t; env : Env.t }
+    | Head of { url : string; headers : Headers.t; env : Env.t }
+    | Get of { url : string; headers : Headers.t; env : Env.t }
     | Post of {
+        url : string;
         headers : Headers.t;
         env : Env.t;
         body : unit -> string Js.Promise.t;
       }
     | Put of {
+        url : string;
         headers : Headers.t;
         env : Env.t;
         body : unit -> string Js.Promise.t;
       }
-    | Delete of { headers : Headers.t; env : Env.t }
-    | Options of { headers : Headers.t; env : Env.t }
+    | Delete of { url : string; headers : Headers.t; env : Env.t }
+    | Options of { url : string; headers : Headers.t; env : Env.t }
 end
 
 module Response = struct
@@ -43,7 +45,11 @@ module Response = struct
 end
 
 module Workers_request = struct
-  type t = { _method : String.t; [@mel.as "method"] headers : Headers.t }
+  type t = {
+    _method : String.t; [@mel.as "method"]
+    headers : Headers.t;
+    url : Js.String.t;
+  }
 
   external text : unit -> (t[@mel.this]) -> String.t Js.Promise.t = "text"
   [@@mel.send]
@@ -58,14 +64,15 @@ end) =
 struct
   let handle request env () =
     let open Workers_request in
-    let headers = request.headers in
+    let { headers; url; _method } = request in
     let request =
-      match request._method with
-      | "HEAD" -> Request.Head { headers; env }
-      | "GET" -> Request.Get { headers; env }
+      match _method with
+      | "HEAD" -> Request.Head { url; headers; env }
+      | "GET" -> Request.Get { url; headers; env }
       | "POST" ->
           Request.Post
             {
+              url;
               headers;
               env;
               body = (fun () -> request |> Workers_request.text ());
@@ -73,12 +80,13 @@ struct
       | "PUT" ->
           Request.Put
             {
+              url;
               headers;
               env;
               body = (fun () -> request |> Workers_request.text ());
             }
-      | "DELETE" -> Request.Delete { headers; env }
-      | "OPTIONS" -> Request.Options { headers; env }
+      | "DELETE" -> Request.Delete { url; headers; env }
+      | "OPTIONS" -> Request.Options { url; headers; env }
       | _ -> failwith "method not supported"
     in
     Handler.handle request
