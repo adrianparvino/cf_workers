@@ -6,22 +6,12 @@ end
 
 module Request : sig
   type t =
-    | Head of { url : string; headers : Headers.t; env : Env.t }
-    | Get of { url : string; headers : Headers.t; env : Env.t }
-    | Post of {
-        url : string;
-        headers : Headers.t;
-        env : Env.t;
-        body : unit -> string Js.Promise.t;
-      }
-    | Put of {
-        url : string;
-        headers : Headers.t;
-        env : Env.t;
-        body : unit -> string Js.Promise.t;
-      }
-    | Delete of { url : string; headers : Headers.t; env : Env.t }
-    | Options of { url : string; headers : Headers.t; env : Env.t }
+    | Head of { url : string }
+    | Get of { url : string }
+    | Post of { url : string; body : unit -> string Js.Promise.t }
+    | Put of { url : string; body : unit -> string Js.Promise.t }
+    | Delete of { url : string }
+    | Options of { url : string }
 end
 
 module Response : sig
@@ -45,7 +35,7 @@ module Workers_request : sig
 end
 
 module Make (_ : sig
-  val handle : Request.t -> Response.t Js.Promise.t
+  val handle : Headers.t -> Env.t -> Request.t -> Response.t Js.Promise.t
 end) : sig
   val handle : Workers_request.t -> Env.t -> unit -> Response.t Js.Promise.t
 end
