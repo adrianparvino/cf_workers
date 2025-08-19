@@ -1,9 +1,17 @@
 module Env = struct
-  type t = { ai : Ai.t option; d1 : D1.t option }
+  type t
 
   external getUnsafe : t -> string -> 'a = "" [@@mel.get_index]
 
   let get = getUnsafe
+
+  let getAI env key =
+    let ai = getUnsafe env key in
+    ai
+
+  let getD1 env key =
+    let d1 = getUnsafe env key in
+    d1
 end
 
 module Request = struct

@@ -1,7 +1,9 @@
 module Env : sig
-  type t = { ai : Ai.t option; d1 : D1.t option }
+  type t
 
   val get : t -> string -> 'a option
+  val getAI : t -> string -> Ai.t option
+  val getD1 : t -> string -> D1.t option
 end
 
 module Request : sig
