@@ -8,12 +8,12 @@ end
 
 module Request = struct
   type t =
-    | Head of { url : string }
-    | Get of { url : string }
-    | Post of { url : string; body : unit -> string Js.Promise.t }
-    | Put of { url : string; body : unit -> string Js.Promise.t }
-    | Delete of { url : string }
-    | Options of { url : string }
+    | Head
+    | Get
+    | Post of { body : unit -> string Js.Promise.t }
+    | Put of { body : unit -> string Js.Promise.t }
+    | Delete
+    | Options
 end
 
 module Response = struct
@@ -49,7 +49,8 @@ module Workers_request = struct
 end
 
 module Make (Handler : sig
-  val handle : Headers.t -> Env.t -> Request.t -> Response.t Js.Promise.t
+  val handle :
+    Headers.t -> Env.t -> string -> Request.t -> Response.t Js.Promise.t
 end) =
 struct
   let handle request env () =
@@ -57,17 +58,15 @@ struct
     let { headers; url; _method } = request in
     let request =
       match _method with
-      | "HEAD" -> Request.Head { url }
-      | "GET" -> Request.Get { url }
+      | "HEAD" -> Request.Head
+      | "GET" -> Request.Get
       | "POST" ->
-          Request.Post
-            { url; body = (fun () -> request |> Workers_request.text ()) }
+          Request.Post { body = (fun () -> request |> Workers_request.text ()) }
       | "PUT" ->
-          Request.Put
-            { url; body = (fun () -> request |> Workers_request.text ()) }
-      | "DELETE" -> Request.Delete { url }
-      | "OPTIONS" -> Request.Options { url }
+          Request.Put { body = (fun () -> request |> Workers_request.text ()) }
+      | "DELETE" -> Request.Delete
+      | "OPTIONS" -> Request.Options
       | _ -> failwith "method not supported"
     in
-    Handler.handle headers env request
+    Handler.handle headers env url request
 end
