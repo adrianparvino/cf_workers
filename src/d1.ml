@@ -23,3 +23,7 @@ external bind : prepared_statement -> Bind.t array -> bound_prepared_statement
 [@@mel.send] [@@mel.variadic]
 
 external prepare : t -> string -> prepared_statement = "prepare" [@@mel.send]
+
+external batch :
+  t -> bound_prepared_statement array -> 'a results array Js.Promise.t = "batch"
+[@@mel.send]
