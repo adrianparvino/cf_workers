@@ -56,11 +56,17 @@ module Workers_request = struct
   [@@mel.send]
 end
 
-module Make (Handler : sig
+module type Handler = sig
   val handle :
-    Headers.t -> Env.t -> string -> Request.t -> Response.t Js.Promise.t
-end) =
-struct
+    Ctx.t ->
+    Headers.t ->
+    Env.t ->
+    string ->
+    Request.t ->
+    Response.t Js.Promise.t
+end
+
+module Make (Handler : Handler) = struct
   let handle request env () =
     let open Workers_request in
     let { headers; url; _method } = request in
@@ -76,5 +82,5 @@ struct
       | "OPTIONS" -> Request.Options
       | _ -> failwith "method not supported"
     in
-    Handler.handle headers env url request
+    Handler.handle Ctx.empty headers env url request
 end

@@ -36,9 +36,11 @@ module Workers_request : sig
   [@@mel.send]
 end
 
-module Make (_ : sig
+module type Handler = sig
   val handle :
-    Headers.t -> Env.t -> string -> Request.t -> Response.t Js.Promise.t
-end) : sig
+    Ctx.t -> Headers.t -> Env.t -> string -> Request.t -> Response.t Js.Promise.t
+end
+
+module Make (_: Handler) : sig
   val handle : Workers_request.t -> Env.t -> unit -> Response.t Js.Promise.t
 end
