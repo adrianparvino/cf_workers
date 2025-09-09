@@ -57,16 +57,15 @@ module Workers_request = struct
 end
 
 module type Handler = sig
+  type response
+
   val handle :
-    Ctx.t ->
-    Headers.t ->
-    Env.t ->
-    string ->
-    Request.t ->
-    Response.t Js.Promise.t
+    Ctx.t -> Headers.t -> Env.t -> string -> Request.t -> response Js.Promise.t
 end
 
-module Make (Handler : Handler) = struct
+module Make (Handler : Handler with type response := Response.t) : sig
+  val handle : Workers_request.t -> Env.t -> unit -> Response.t Js.Promise.t
+end = struct
   let handle request env () =
     let open Workers_request in
     let { headers; url; _method } = request in

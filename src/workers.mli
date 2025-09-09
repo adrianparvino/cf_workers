@@ -37,10 +37,12 @@ module Workers_request : sig
 end
 
 module type Handler = sig
+  type response
+
   val handle :
-    Ctx.t -> Headers.t -> Env.t -> string -> Request.t -> Response.t Js.Promise.t
+    Ctx.t -> Headers.t -> Env.t -> string -> Request.t -> response Js.Promise.t
 end
 
-module Make (_: Handler) : sig
+module Make (_ : Handler with type response := Response.t) : sig
   val handle : Workers_request.t -> Env.t -> unit -> Response.t Js.Promise.t
 end
