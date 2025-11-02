@@ -26,20 +26,26 @@ end
 
 module Response = struct
   type t
-  type options = { headers : Headers.t } [@@warning "-69"]
+
+  type options = {
+    headers : Headers.t option; [@mel.optional]
+    status : int option; [@mel.optional]
+    statusText : string option; [@mel.optional]
+  }
+  [@@deriving jsProperties] [@@warning "-69"]
 
   external make : 'a -> options -> t = "Response" [@@mel.new]
 
-  let create ?headers response =
+  let create options response =
     let headers =
-      match headers with
-      | Some headers -> headers
+      match options.headers with
+      | Some _ -> options.headers
       | None ->
           let header = Headers.empty () in
           let _ = header |> Headers.set "content-type" "application/json" in
-          header
+          Some header
     in
-    make response { headers }
+    make response { options with headers }
 end
 
 module Workers_request = struct
